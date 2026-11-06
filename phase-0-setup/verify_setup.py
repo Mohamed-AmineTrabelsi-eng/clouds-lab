@@ -1,22 +1,5 @@
 #!/usr/bin/env python3
-"""Phase 0 self-check — probes your environment and writes a submission report.
-
-Run this from the repository root once you have finished the setup tasks::
-
-    python phase-0-setup/verify_setup.py
-
-It inspects your machine (Python version, gcloud config, Docker, git remote) and
-writes ``submission/phase0_report.json``. Commit that file and push — your CI and the
-instructor grade it.
-
-Two small functions are left for YOU to implement (search for ``TODO``):
-
-  * ``parse_gcloud_config`` — pull the account + project out of ``gcloud`` JSON output.
-  * ``parse_repo_slug``     — turn a git remote URL into ``owner/repo``.
-
-Everything else is provided. These are pure functions (input string in, value out),
-so you can test them without touching the cloud — see ``tests/test_units.py``.
-"""
+"""Phase 0 self-check — probes your environment and writes a submission report."""
 
 from __future__ import annotations
 
@@ -24,7 +7,6 @@ import json
 import sys
 from pathlib import Path
 
-# Make the shared `autograder` package importable when run from anywhere.
 REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
@@ -34,47 +16,32 @@ from autograder import env_checks  # noqa: E402
 REPORT_PATH = REPO_ROOT / "submission" / "phase0_report.json"
 
 
-# --------------------------------------------------------------------------- #
-# Functions YOU implement
-# --------------------------------------------------------------------------- #
 def parse_gcloud_config(raw: str) -> dict:
-    """Parse the JSON emitted by ``gcloud config list --format=json``.
-
-    Return ``{"account": <str>, "project": <str>}`` using empty strings when a
-    value is absent. The relevant fields live under the ``"core"`` section, e.g.::
-
-        {"core": {"account": "you@example.com", "project": "my-proj-123"}}
-
-    Args:
-        raw: the raw stdout string from the gcloud command (may be empty).
-    """
-    # TODO: parse `raw` as JSON and return {"account": ..., "project": ...}
-    #       from the "core" section. Return empty strings if raw is empty or a
-    #       field is missing.
-    raise NotImplementedError("Phase 0: implement parse_gcloud_config()")
+    """Parse the JSON emitted by ``gcloud config list --format=json``."""
+    if not raw:
+        return {"account": "", "project": ""}
+    data = json.loads(raw)
+    core = data.get("core", {}) or {}
+    return {
+        "account": core.get("account", "") or "",
+        "project": core.get("project", "") or "",
+    }
 
 
 def parse_repo_slug(remote_url: str) -> str:
-    """Turn a GitHub remote URL into an ``owner/repo`` slug (no ``.git`` suffix).
-
-    Must handle both forms git prints:
-
-      * HTTPS: ``https://github.com/eurecom/clouds-lab.git``  -> ``eurecom/clouds-lab``
-      * SSH:   ``git@github.com:eurecom/clouds-lab.git``      -> ``eurecom/clouds-lab``
-
-    Return ``""`` if the URL is empty or not a github.com URL.
-
-    Args:
-        remote_url: output of ``git remote get-url origin`` (may be empty).
-    """
-    # TODO: return "owner/repo" for both the HTTPS and SSH forms shown above.
-    #       Strip any trailing ".git". Return "" if not a github.com URL.
-    raise NotImplementedError("Phase 0: implement parse_repo_slug()")
+    """Turn a GitHub remote URL into an ``owner/repo`` slug (no ``.git`` suffix)."""
+    if not remote_url or "github.com" not in remote_url:
+        return ""
+    url = remote_url.strip()
+    if url.endswith(".git"):
+        url = url[:-4]
+    if url.startswith("git@github.com:"):
+        slug = url[len("git@github.com:"):]
+    else:
+        slug = url.split("github.com/", 1)[1]
+    return slug
 
 
-# --------------------------------------------------------------------------- #
-# Provided probes (do not modify)
-# --------------------------------------------------------------------------- #
 def check_python() -> dict:
     major, minor, micro = env_checks.python_version()
     return {
@@ -84,7 +51,6 @@ def check_python() -> dict:
 
 
 def check_environment() -> dict:
-    """Record where this ran. Cloud Shell is the mandated dev environment; local is allowed."""
     return {"cloud_shell": env_checks.in_cloud_shell()}
 
 
