@@ -1,0 +1,30 @@
+{
+  "phase": "2",
+  "environment": {
+    "colab": true
+  },
+  "attention": {
+    "naive_ms": 272.122,
+    "vectorized_ms": 1.222,
+    "speedup": 222.69
+  },
+  "threads": {
+    "1": 3005.765,
+    "2": 2765.003,
+    "4": 2477.951,
+    "8": 2409.438
+  },
+  "devices": {
+    "cpu_ms": 474622.6,
+    "gpu_ms": 13433.0
+  },
+  "training": {
+    "steps": 2000,
+    "final_loss": 1.4818,
+    "param_count": 4935680
+  },
+  "sample": "\nWe well'n tell That, heir it the master.\n'Show thou are obing me being of my Peaces,\nI'les therefore envice day my lord,\nThou worsed of doth ump the falI.\n\nBRIANCE:\nUner's call go came, and if thou ca",
+  "model": {
+    "gcs_url": "https://storage.googleapis.com/project-a7420bce-0b10-468f-a8c-eurecomgpt/model.safetensors"
+  }
+}
